@@ -1,0 +1,7 @@
+notebook
+pandas
+pyarrow
+seaborn
+matplotlib
+scikit-learn
+mermaid-python
