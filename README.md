@@ -1,98 +1,221 @@
-# MLOps
+# MLOps Study Notes
 
-Studies related to MLOps to be able to support innitiatives at B Lab and personal projects 
+## Overview
+Studies related to MLOps to support initiatives at B Lab and personal projects.
 
-- [MLOps Zoomcamp](https://github.com/DataTalksClub/mlops-zoomcamp)
+**Learning Resource:** [MLOps Zoomcamp](https://github.com/DataTalksClub/mlops-zoomcamp)
 
-# MLOps steps 
+## Core MLOps Process
 
-## Introduction 
+The fundamental MLOps workflow follows three main phases:
+**Design → Train → Operate**
 
-Main steps for MLOps are:
+- **Deployment Method:** APIs serve as the primary deployment mechanism
+- **Integration:** Applications connect to these APIs for model inference
+- **Definition:** MLOps is a set of practices that integrate ML models into production systems, ensuring they can be retrained automatically and their quality continuously monitored
 
-Design -> Train -> Operate
+## Development Environment Setup
 
-API is the way to deploy. App is connected to this API - deployment.
+### GitHub Codespaces Configuration
+1. Create a new repository
+2. Click "Code" button (same location as clone link)
+3. Select "Create Codespaces on Main"
+4. Install VS Code extension for enhanced local development
 
-MLOPs is a set of practices to integrate the model, make sure it can be retrained and to monitor its quality. 
+## MLOps Maturity Model
 
-## Configure 
+### Level 0: No MLOps
+- **Characteristics:** Experimental phase with Jupyter notebooks
+- **Limitations:** No tracking, no automation
+- **Use Case:** Proof of concepts (POCs)
+- **Next Step:** Validate model effectiveness before advancing
 
-GitHub Codespaces 
-- Create repo
-- Click "Code" (same place where you find the link for cloning) and click Create Codespaces on Main 
-- Open VSCode locally, install extension 
+### Level 1: DevOps, No MLOps
+- **Engineering Practices:** Automated releases, unit testing, CI/CD, operational metrics
+- **ML Limitations:** No experiment tracking, no reproducibility, data science team isolated from engineering
+- **Scenario:** First-time model deployment to production
 
+### Level 2: Automated Training
+- **Key Features:**
+  - Automated training pipelines
+  - Experiment tracking systems
+  - Model registry with versioning
+  - Low-friction deployment processes
+  - Data science and engineering collaboration
+- **Recommended For:** Organizations with multiple models in production
 
-## MLOps maturity scale
+### Level 3: Automated Deployment
+- **Advanced Capabilities:**
+  - Streamlined model deployment
+  - A/B testing for model versions
+  - Comprehensive model monitoring
+- **Ideal For:** 4-6 models in production OR one business-critical model
 
-0. No MLOps - no tracking, no automation, just experimenting with ML with a jupyter notebook. Good level for POCs, but once you pass this level you should have more maturity. Prove that the model is good first before putting more effort in it. 
+### Level 4: Full MLOps Automation
+- **Complete Automation:** Self-healing systems that automatically retrain and deploy models
+- **Features:** Fault prevention, comprehensive monitoring, zero human intervention
+- **Target:** Organizations with mature ML operations at scale
 
-1. DevOps, no MLOps - deploying a model, having engineering practices but not ML practices. Releases automated, unit testing, CI/CD, Ops Metrics. No experiment tracking, no reproducibility, data science separated from engineers. First time putting a model in production. 
+## Experiment Tracking
 
-2. Automated training - training pipeline, you don't need to manually retrain model. Experiment tracking, model registry (versioning models to know which is in production). Low friction deployment with data scientists working with engineering. Usually interesting to apply once you have more than one model in production. 
+### Core Concepts
+- **ML Experiment:** Complete model development process
+- **Experiment Run:** Individual trial within an experiment
+- **Run Artifact:** Files associated with specific runs
+- **Experiment Metadata:** Contextual information about experiments
 
-3. Automated deployment - easy to deploy model. A/B testing - testing versions. Model monitoring. Usually interesting if 4-6 models in production, or one super important model in production.  
+### Tracking Components
+Essential elements to track for each experiment:
+- Source code and version
+- Environment configuration
+- Training data
+- Model architecture
+- Hyperparameters
+- Performance metrics
 
-4. Full MLOps automation - if this model fails, it automatically retrains itself and create a new version of the model without human interaction. Fully automated, fault prevention and carefully monitored. In time, companies that take machine learning seriously arrive to this level of maturity. 
+### Benefits
+- **Reproducibility:** Ability to recreate exact experimental conditions
+- **Organization:** Structured approach to experiment management
+- **Optimization:** Data-driven model improvement
 
-## Experiment tracking
-Concepts:
-- ML experiment: the process of building an ML model
-- Experiment run: each trial in an ML experiment
-- Run artifact: any file that is associated with an ML run
-- Experiment data
+## MLFlow Implementation
 
-Experiment tracking is the process of keeping track of all relevant information from an ML experiment. Including:
-- Source code
-- Environment
-- Data
-- Model
-- Hyperparameters 
-- Metrics
+### Platform Overview
+Open-source machine learning lifecycle management platform with four core components:
+1. **Tracking:** Experiment logging and comparison
+2. **Models:** Model packaging and serving
+3. **Model Registry:** Centralized model versioning
+4. **Projects:** Reproducible ML code packaging
 
-Reasons to do that:
-- Reproducibility
-- Organization
-- Optimization
+### Installation and Setup
 
-### MLFlow
-
-An open source platform for the machine learning lifecycle. 
-- Tracking
-- Models
-- Model Registry
-- Projects
-
-```sh
-pip install mlflow 
+#### Basic Installation
+```bash
+pip install mlflow
 ```
 
-You can also have collaborative environment in a server.
-
-Allows to keep track of every run with needed data.
-
-```sh
-mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./artifacts 
+#### Local Server with Persistence
+```bash
+mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./artifacts
 ```
 
-This way, data will be stored in this file about the runs. For your Jupyter Notebooks, you need to setup one cell:
-
+#### Python Configuration
 ```python
 import mlflow
 
+# Configure tracking database
 mlflow.set_tracking_uri("sqlite:///mlflow.db")
 mlflow.set_experiment("nyc-taxi-experiment")
 ```
 
+### Model Management
+Version control and lineage tracking for ML models.
 
-## Model management
-Versioning and model lineage.
-
-By adding the log_model in your code, you'll be able to store the model to use again later. MLFlow shows it in its interface and you can re-use it.
-
+#### Model Logging Example
 ```python
+# Log trained model as artifact
 mlflow.xgboost.log_model(booster)
 ```
 
-By adding the **--default-artifact-root ./artifacts ** param, you be able to set the artifact root that will be used when storing models as artifacts.
+**Note:** The `--default-artifact-root ./artifacts` parameter specifies local storage location for model artifacts.
+
+## Model Registry
+
+### Beyond Version Control
+The model registry addresses critical production concerns:
+- **Change Documentation:** What modifications were made between versions?
+- **Configuration Management:** Should production hyperparameters be updated?
+- **Preprocessing Requirements:** What data transformations are needed?
+- **Environment Specifications:** Dependencies, library versions, runtime requirements
+- **Rollback Capability:** Quick reversion to previous stable versions
+
+### Key Benefits
+- **Improved Versioning:** Comprehensive model lifecycle tracking
+- **Enhanced Communication:** Better collaboration between data scientists and deployment teams
+- **Model Lineage:** Clear history of model evolution
+- **Stage Management:** Organized promotion through staging, production phases
+
+## MLFlow Deployment Strategies
+
+### Scenario-Based Recommendations
+
+#### Individual Development
+**Setup:** Local MLFlow UI
+```bash
+mlflow ui
+```
+**Use Case:** Solo projects without production deployment needs
+
+#### Small Team Collaboration
+**Setup:** Local MLFlow server with persistence
+```bash
+mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./artifacts
+```
+**Use Case:** Cross-functional team with single ML practitioner
+
+#### Enterprise Multi-Team Environment
+**Architecture Components:**
+- **Tracking Server:** EC2 instance
+- **Backend Store:** PostgreSQL database
+- **Artifact Store:** S3 bucket
+- **Considerations:** Security, scalability, team isolation
+
+### Configuration Options
+
+| Component | Local Option | Remote Option |
+|-----------|-------------|---------------|
+| Backend Store | SQLite | PostgreSQL |
+| Artifact Storage | Local filesystem | S3 |
+| Tracking Server | localhost | Remote server |
+
+## ML Pipeline Architecture
+
+### Pipeline Overview
+A systematic approach to creating reproducible, parameterized ML workflows.
+
+```mermaid
+flowchart TD
+    A[Data Ingestion] --> B[Data Transformation]
+    B --> C[Feature Engineering]
+    C --> D[Hyperparameter Tuning]
+    D --> E[Final Model Training]
+    E --> F[Model Registry Storage]
+```
+
+### Pipeline Stages Detailed
+
+1. **Data Ingestion:** Raw data collection and initial loading
+2. **Data Transformation:** Filtering, outlier removal, data cleaning
+3. **Feature Engineering:** Vectorization, feature matrix creation (X, y)
+4. **Hyperparameter Tuning:** Optimization of model parameters
+5. **Final Model Training:** Training with optimal parameters and full dataset
+6. **Model Registry Storage:** Versioned model storage for production use
+
+### Implementation Strategy
+**Development Path:** Jupyter Notebook → Python modules → Production pipeline
+
+**Code Organization:** Transform experimental code into maintainable functions with clear interfaces
+
+## Workflow Orchestration
+
+### Orchestration Tools
+
+#### General Purpose Platforms
+- **Airflow:** Mature, feature-rich workflow management
+- **Prefect:** Modern, Python-native orchestration
+- **Mage:** Data pipeline tool with ML focus
+- **Dagster:** Asset-oriented data orchestration
+
+#### ML-Specific Platforms
+- **Kubeflow:** Kubernetes-native ML workflows
+- **MLflow:** End-to-end ML lifecycle management
+
+### Orchestration Benefits
+- **Centralized Management:** Single point of control for all workflows
+- **Scheduling:** Automated execution based on time or events
+- **Monitoring:** Real-time pipeline health and performance tracking
+- **Alerting:** Proactive notification of failures or issues
+- **Maintainability:** Structured, version-controlled workflow definitions
+
+## Model Deployment
+
