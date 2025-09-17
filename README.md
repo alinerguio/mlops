@@ -219,3 +219,97 @@ flowchart TD
 
 ## Model Deployment
 
+### Deployment Context
+Following the core MLOps process: **Design → Train → Operate**
+
+After designing the solution and validating that ML is the appropriate approach, and after training a model successfully, the final phase is to operate it in production. Model deployment is the primary output of this operational phase.
+
+### Deployment Patterns
+
+#### 1. Batch Processing
+**Use Case:** Predictions can tolerate latency (hours to days)
+**Examples:** Churn prediction models, monthly reporting, periodic risk assessments
+**Execution:** Scheduled jobs running at regular intervals
+
+```mermaid
+flowchart TD
+    A[Source Table] --> B[Scheduled Job<br/>Applying Model]
+    B --> C[Predictions Table]
+    C --> D[Business Reports<br/>& Dashboards]
+```
+
+**Characteristics:**
+- High throughput processing
+- Cost-effective for large datasets
+- Suitable for non-time-critical predictions
+- Can leverage distributed computing resources efficiently
+
+#### 2. Real-Time Serving
+
+##### Web Service (API)
+**Use Case:** On-demand predictions with immediate response requirements
+**Examples:** Recommendation engines, fraud detection, personalization
+**Architecture:** RESTful APIs or GraphQL endpoints
+
+```mermaid
+flowchart TD
+    A[User] --> B[Application]
+    B -->|HTTP Request| C[Model API Service]
+    C -->|Prediction Response| B
+    B --> A
+```
+
+**Characteristics:**
+- Low latency (milliseconds to seconds)
+- Synchronous request-response pattern
+- Scalable with load balancers and auto-scaling
+- Suitable for user-facing applications
+
+##### Streaming Processing
+**Use Case:** Continuous, real-time event processing
+**Examples:** IoT sensor monitoring, real-time anomaly detection, live recommendation updates
+**Architecture:** Event-driven systems with message queues
+
+```mermaid
+flowchart TD
+    A[Event Producers<br/>Sensors, Apps, Services] -->|Stream Events| B[Message Queue<br/>Kafka, Kinesis, Pub/Sub]
+    B --> C[Model Consumer 1<br/>Fraud Detection]
+    B --> D[Model Consumer 2<br/>Recommendations]
+    B --> E[Model Consumer 3<br/>Monitoring]
+    C --> F[Actions/Alerts]
+    D --> G[User Experience]
+    E --> H[System Metrics]
+```
+
+**Characteristics:**
+- Ultra-low latency processing
+- High throughput event handling
+- Asynchronous processing
+- Can include micro-batch processing for efficiency
+- Fault-tolerant and scalable
+
+### Deployment Decision Framework
+
+| Factor | Batch | Web Service | Streaming |
+|--------|-------|-------------|-----------|
+| **Latency Requirements** | Hours to Days | Seconds | Milliseconds |
+| **Volume** | High | Medium | Very High |
+| **Cost** | Low | Medium | High |
+| **Complexity** | Low | Medium | High |
+| **Use Cases** | Reports, Analytics | User Interactions | Real-time Monitoring |
+
+### Implementation Considerations
+
+#### Infrastructure Requirements
+- **Compute Resources:** CPU, memory, and GPU requirements based on model complexity
+- **Scaling Strategy:** Horizontal vs. vertical scaling based on traffic patterns
+- **Storage:** Model artifacts, feature stores, and prediction logs
+- **Monitoring:** Performance metrics, model drift detection, and system health
+
+#### Operational Concerns
+- **Model Versioning:** Blue-green deployments, canary releases
+- **Rollback Strategies:** Quick reversion to previous model versions
+- **A/B Testing:** Comparing model performance in production
+- **Security:** Authentication, authorization, and data privacy compliance
+
+stopped at - https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/04-deployment#42-web-services-deploying-models-with-flask-and-docker 
